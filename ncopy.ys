@@ -1,0 +1,171 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+
+    irmovq  $10,  %r11
+    irmovq  $1,   %r10
+    irmovq  $0xffff, %r12
+    subq    %r11, %rdx
+    jl      switch
+    irmovq  $0x50,  %r13
+Loop1:
+    mrmovq  (%rdi), %r8
+    mrmovq  0x8(%rdi), %r9
+    rmmovq  %r8, (%rsi)
+    rmmovq  %r9, 0x8(%rsi)
+    andq    %r8, %r8
+    jle     testnext1
+    addq    %r10, %rax
+testnext1:
+    andq    %r9, %r9
+    jle     nextpos1
+    addq    %r10, %rax
+nextpos1:
+    mrmovq  0x10(%rdi), %r8
+    mrmovq  0x18(%rdi), %r9
+    rmmovq  %r8, 0x10(%rsi)
+    rmmovq  %r9, 0x18(%rsi)
+    andq    %r8, %r8
+    jle     testnext2
+    addq    %r10, %rax
+testnext2:
+    andq    %r9, %r9
+    jle     nextpos2
+    addq    %r10, %rax
+nextpos2:
+    mrmovq  0x20(%rdi), %r8
+    mrmovq  0x28(%rdi), %r9
+    rmmovq  %r8, 0x20(%rsi)
+    rmmovq  %r9, 0x28(%rsi)
+    andq    %r8, %r8
+    jle     testnext3
+    addq    %r10, %rax
+testnext3:
+    andq    %r9, %r9
+    jle     nextpos3
+    addq    %r10, %rax
+nextpos3:
+    mrmovq  0x30(%rdi), %r8
+    mrmovq  0x38(%rdi), %r9
+    rmmovq  %r8, 0x30(%rsi)
+    rmmovq  %r9, 0x38(%rsi)
+    andq    %r8, %r8
+    jle     testnext4
+    addq    %r10, %rax
+testnext4:
+    andq    %r9, %r9
+    jle     nextpos4
+    addq    %r10, %rax
+nextpos4:
+    mrmovq  0x40(%rdi), %r8
+    mrmovq  0x48(%rdi), %r9
+    rmmovq  %r8, 0x40(%rsi)
+    rmmovq  %r9, 0x48(%rsi)
+    andq    %r8, %r8
+    jle     testnext5
+    addq    %r10, %rax
+testnext5:
+    andq    %r9, %r9
+    jle     nextpos5
+    addq    %r10, %rax
+nextpos5:
+    addq    %r13, %rdi
+    addq    %r13, %rsi
+Test1:
+    subq    %r11, %rdx
+    jge     Loop1
+
+switch:
+    addq    %rdx, %rdx
+    mrmovq  jmp_table(%rdx), %rdx
+    andq    %r12, %rdx
+    pushq   %rdx
+    ret
+
+    .word   $0x31
+    .word   Remain1
+    .word   Remain2
+    .word   Remain3
+    .word   Remain4
+    .word   Remain5
+    .word   Remain6
+    .word   Remain7
+    .word   Remain8
+    .word   Remain9
+jmp_table:
+
+Remain9:
+    mrmovq  0x40(%rdi), %r8
+    rmmovq  %r8, 0x40(%rsi)
+    andq    %r8, %r8
+    jle     Remain8
+    addq    %r10, %rax
+Remain8:
+    mrmovq  0x38(%rdi), %r9
+    rmmovq  %r9, 0x38(%rsi)
+    andq    %r9, %r9
+    jle     Remain7
+    addq    %r10, %rax
+Remain7:
+    mrmovq  0x30(%rdi), %r8
+    rmmovq  %r8, 0x30(%rsi)
+    andq    %r8, %r8
+    jle     Remain6
+    addq    %r10, %rax
+Remain6:
+    mrmovq  0x28(%rdi), %r9
+    rmmovq  %r9, 0x28(%rsi)
+    andq    %r9, %r9
+    jle     Remain5
+    addq    %r10, %rax
+Remain5:
+    mrmovq  0x20(%rdi), %r8
+    rmmovq  %r8, 0x20(%rsi)
+    andq    %r8, %r8
+    jle     Remain4
+    addq    %r10, %rax
+Remain4:
+    mrmovq  0x18(%rdi), %r9
+    rmmovq  %r9, 0x18(%rsi)
+    andq    %r9, %r9
+    jle     Remain3
+    addq    %r10, %rax
+Remain3:
+    mrmovq  0x10(%rdi), %r8
+    rmmovq  %r8, 0x10(%rsi)
+    andq    %r8, %r8
+    jle     Remain2
+    addq    %r10, %rax
+Remain2:
+    mrmovq  0x8(%rdi), %r9
+    rmmovq  %r9, 0x8(%rsi)
+    andq    %r9, %r9
+    jle     Remain1
+    addq    %r10, %rax
+Remain1:
+    mrmovq  (%rdi), %r8
+    rmmovq  %r8, (%rsi)
+    andq    %r8, %r8
+    jle     $0x31
+    addq    %r10, %rax
+    jmp     $0x31
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */
