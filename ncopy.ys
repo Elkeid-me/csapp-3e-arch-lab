@@ -2,7 +2,6 @@
 ##################################################################
 # ncopy.ys - Copy a src block of len words to dst.
 # Return the number of positive words (>0) contained in src.
-#
 ##################################################################
 # Do not modify this portion
 # Function prologue.
@@ -12,8 +11,8 @@ ncopy:
 ##################################################################
 # You can modify this portion
 
-    irmovq  $10,  %r11
     irmovq  $1,   %r10
+    irmovq  $10,  %r11
     irmovq  $0xffff, %r12
     subq    %r11, %rdx
     jl      switch
@@ -88,8 +87,10 @@ Test1:
 switch:
     addq    %rdx, %rdx
     mrmovq  jmp_table(%rdx), %rdx
+    mrmovq  0x8(%rdi), %r13
     andq    %r12, %rdx
     pushq   %rdx
+    mrmovq  (%rdi), %r11
     ret
 
     .word   $0x31
@@ -105,57 +106,61 @@ switch:
 jmp_table:
 
 Remain9:
-    mrmovq  0x40(%rdi), %r8
-    rmmovq  %r8, 0x40(%rsi)
-    andq    %r8, %r8
-    jle     Remain8
-    addq    %r10, %rax
+    mrmovq  0x40(%rdi), %rcx
+    rmmovq  %rcx, 0x40(%rsi)
 Remain8:
-    mrmovq  0x38(%rdi), %r9
-    rmmovq  %r9, 0x38(%rsi)
-    andq    %r9, %r9
-    jle     Remain7
+    andq    %rcx, %rcx
+    mrmovq  0x38(%rdi), %rcx
+    jle     Remain7x
     addq    %r10, %rax
+Remain7x:
+    rmmovq  %rcx, 0x38(%rsi)
 Remain7:
-    mrmovq  0x30(%rdi), %r8
-    rmmovq  %r8, 0x30(%rsi)
-    andq    %r8, %r8
-    jle     Remain6
+    andq    %rcx, %rcx
+    mrmovq  0x30(%rdi), %rcx
+    jle     Remain6x
     addq    %r10, %rax
+Remain6x:
+    rmmovq  %rcx, 0x30(%rsi)
 Remain6:
-    mrmovq  0x28(%rdi), %r9
-    rmmovq  %r9, 0x28(%rsi)
-    andq    %r9, %r9
-    jle     Remain5
+    andq    %rcx, %rcx
+    mrmovq  0x28(%rdi), %rcx
+    jle     Remain5x
     addq    %r10, %rax
+Remain5x:
+    rmmovq  %rcx, 0x28(%rsi)
 Remain5:
-    mrmovq  0x20(%rdi), %r8
-    rmmovq  %r8, 0x20(%rsi)
-    andq    %r8, %r8
-    jle     Remain4
+    andq    %rcx, %rcx
+    mrmovq  0x20(%rdi), %rcx
+    jle     Remain4x
     addq    %r10, %rax
+Remain4x:
+    rmmovq  %rcx, 0x20(%rsi)
 Remain4:
-    mrmovq  0x18(%rdi), %r9
-    rmmovq  %r9, 0x18(%rsi)
-    andq    %r9, %r9
-    jle     Remain3
+    andq    %rcx, %rcx
+    mrmovq  0x18(%rdi), %rcx
+    jle     Remain3x
     addq    %r10, %rax
+Remain3x:
+    rmmovq  %rcx, 0x18(%rsi)
 Remain3:
-    mrmovq  0x10(%rdi), %r8
-    rmmovq  %r8, 0x10(%rsi)
-    andq    %r8, %r8
+    andq    %rcx, %rcx
+    mrmovq  0x10(%rdi), %rcx
+    jle     Remain2x
+    addq    %r10, %rax
+Remain2x:
+    andq    %rcx, %rcx
+    rmmovq  %rcx, 0x10(%rsi)
     jle     Remain2
     addq    %r10, %rax
 Remain2:
-    mrmovq  0x8(%rdi), %r9
-    rmmovq  %r9, 0x8(%rsi)
-    andq    %r9, %r9
+    rmmovq  %r13, 0x8(%rsi)
+    andq    %r13, %r13
     jle     Remain1
     addq    %r10, %rax
 Remain1:
-    mrmovq  (%rdi), %r8
-    rmmovq  %r8, (%rsi)
-    andq    %r8, %r8
+    rmmovq  %r11, (%rsi)
+    andq    %r11, %r11
     jle     $0x31
     addq    %r10, %rax
     jmp     $0x31
